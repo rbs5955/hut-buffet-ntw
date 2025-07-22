@@ -1,28 +1,58 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Hut Buffet Redirect</title>
+  <meta charset="UTF-8">
+  <title>Redirecting...</title>
+  <script>
+    const TEST_MODE = true; // ← เปลี่ยนเป็น false ตอนขึ้น Production จริง
+
+    const links = {
+      a: "https://drive.google.com/file/d/13HcX_7ygkpUNYra6NCATkkRBu_Rp8D9q/view?usp=sharing", // 22 ก.ค. - 6 ส.ค. 2025
+      b: "https://drive.google.com/file/d/1eF0soiR4qu5x8mOh5OJCtbpr-S1HzZCR/view?usp=sharing",  // 7 ส.ค. - 31 ต.ค. 2025
+      c: "https://drive.google.com/file/d/1OEYqYGbt7WMDbMchIOOdyelLRsxXtjh2/view?usp=sharing"   // 1 พ.ย. - 31 ธ.ค. 2025
+    };
+
+    function getThailandDate() {
+      if (TEST_MODE) {
+        // จำลองว่าเป็นวันที่ 7 สิงหาคม 2025 เวลา 09:00
+        return new Date("2025-08-07T09:00:00+07:00");
+      } else {
+        const now = new Date();
+        const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+        return new Date(utc + (7 * 60 * 60 * 1000)); // UTC+7
+      }
+    }
+
+    (function redirectByDate() {
+      const now = getThailandDate();
+
+      const dateAStart = new Date("2025-07-22T00:00:00+07:00");
+      const dateAEnd   = new Date("2025-08-06T23:59:59+07:00");
+
+      const dateBStart = new Date("2025-08-07T00:00:00+07:00");
+      const dateBEnd   = new Date("2025-10-31T23:59:59+07:00");
+
+      const dateCStart = new Date("2025-11-01T00:00:00+07:00");
+      const dateCEnd   = new Date("2025-12-31T23:59:59+07:00");
+
+      let targetURL = null;
+
+      if (now >= dateAStart && now <= dateAEnd) {
+        targetURL = links.a;
+      } else if (now >= dateBStart && now <= dateBEnd) {
+        targetURL = links.b;
+      } else if (now >= dateCStart && now <= dateCEnd) {
+        targetURL = links.c;
+      }
+
+      if (targetURL) {
+        window.location.href = targetURL;
+      } else {
+        document.body.innerHTML = "<h2>ขออภัย ไม่พบข้อมูลสำหรับช่วงวันนี้</h2>";
+      }
+    })();
+  </script>
 </head>
 <body>
-  <script>
-    // === ตั้งค่าตรงนี้ ===
-    const TEST_MODE = true; // ตั้งเป็น false เมื่อใช้งานจริง
-    const A = "https://link-to-a.com";
-    const B = "https://link-to-b.com";
-
-    // ใช้เวลา test หรือเวลาจริงตามโหมด
-    const now = TEST_MODE
-      ? new Date("2025-08-07T00:00:00+07:00") // จำลองว่าเป็นวันที่ 7 ส.ค. 2025
-      : new Date();
-
-    // วันที่ cutoff คือ 7 ส.ค. 2025 เวลา 00:00 น. ตามเวลาประเทศไทย
-    const cutoff = new Date("2025-08-07T00:00:00+07:00");
-
-    // ตรวจสอบแล้ว redirect ทันที
-    const link = now >= cutoff ? B : A;
-    window.location.href = link;
-  </script>
 </body>
 </html>
