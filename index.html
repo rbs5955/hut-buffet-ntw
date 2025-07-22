@@ -1,52 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Redirecting...</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 100px;
+      color: #333;
+    }
+    .info {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    .link {
+      font-weight: bold;
+      color: green;
+    }
+  </style>
   <script>
-    // ลิงก์ Google Drive ปลายทางที่ใช้ได้ตลอดเวลา และเปลี่ยนเนื้อหาได้โดยใช้ Manage Versions
     const links = {
       a: "https://drive.google.com/file/d/13HcX_7ygkpUNYra6NCATkkRBu_Rp8D9q/view?usp=sharing", // 22 ก.ค. - 6 ส.ค. 2025
       b: "https://drive.google.com/file/d/1eF0soiR4qu5x8mOh5OJCtbpr-S1HzZCR/view?usp=sharing",  // 7 ส.ค. - 31 ต.ค. 2025
       c: "https://drive.google.com/file/d/1OEYqYGbt7WMDbMchIOOdyelLRsxXtjh2/view?usp=sharing"   // 1 พ.ย. - 31 ธ.ค. 2025
     };
 
+    // 🔁 Toggle: true = จำลองวันที่ 7 ส.ค. 2025, false = ใช้เวลาจริง
+    const TEST_MODE = true;
+    const SIMULATED_DATE_STRING = "2025-08-07";
+
     function getThailandDate() {
       const now = new Date();
       const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-      return new Date(utc + (7 * 60 * 60 * 1000)); // UTC+7
+      return new Date(utc + (7 * 60 * 60 * 1000));
     }
 
-    (function redirectByDate() {
-      const now = new Date("2025-08-07T12:00:00+07:00");
+    function formatDateOnly(date) {
+      return date.toISOString().slice(0, 10);
+    }
 
-      const dateAStart = new Date("2025-07-22T00:00:00+07:00");
-      const dateAEnd   = new Date("2025-08-06T23:59:59+07:00");
+    function redirectByDate() {
+      const now = TEST_MODE
+        ? new Date(SIMULATED_DATE_STRING + "T00:00:00+07:00")
+        : getThailandDate();
 
-      const dateBStart = new Date("2025-08-07T00:00:00+07:00");
-      const dateBEnd   = new Date("2025-10-31T23:59:59+07:00");
-
-      const dateCStart = new Date("2025-11-01T00:00:00+07:00");
-      const dateCEnd   = new Date("2025-12-31T23:59:59+07:00");
-
+      const dateOnly = formatDateOnly(now);
+      const infoDiv = document.getElementById("info");
       let targetURL = null;
+      let targetLabel = "";
 
-      if (now >= dateAStart && now <= dateAEnd) {
+      // กำหนดช่วงเวลา
+      const dateAStart = "2025-07-22";
+      const dateAEnd   = "2025-08-06";
+      const dateBStart = "2025-08-07";
+      const dateBEnd   = "2025-10-31";
+      const dateCStart = "2025-11-01";
+      const dateCEnd   = "2025-12-31";
+
+      // เช็กว่าอยู่ช่วงไหน
+      if (dateOnly >= dateAStart && dateOnly <= dateAEnd) {
         targetURL = links.a;
-      } else if (now >= dateBStart && now <= dateBEnd) {
+        targetLabel = "A";
+      } else if (dateOnly >= dateBStart && dateOnly <= dateBEnd) {
         targetURL = links.b;
-      } else if (now >= dateCStart && now <= dateCEnd) {
+        targetLabel = "B";
+      } else if (dateOnly >= dateCStart && dateOnly <= dateCEnd) {
         targetURL = links.c;
+        targetLabel = "C";
       }
 
+      // แสดงผล debug
       if (targetURL) {
-        window.location.href = targetURL;
+        infoDiv.innerHTML = `
+          <div class="info">📅 วันที่ระบบใช้งาน: <strong>${dateOnly}</strong></div>
+          <div class="info">🔗 จะ redirect ไปที่ลิงก์ <span class="link">[${targetLabel}]</span> ภายใน 3 วินาที...</div>
+          <div class="info"><a href="${targetURL}" target="_blank">${targetURL}</a></div>
+        `;
+        setTimeout(() => {
+          window.location.href = targetURL;
+        }, 3000);
       } else {
-        document.body.innerHTML = "<h2>ขออภัย ไม่พบข้อมูลสำหรับช่วงวันนี้</h2>";
+        infoDiv.innerHTML = `
+          <div class="info">📅 วันที่ระบบใช้งาน: <strong>${dateOnly}</strong></div>
+          <div class="info" style="color: red;">❌ ไม่พบลิงก์ที่ตรงกับช่วงวันนี้</div>
+        `;
       }
-    })();
+    }
+
+    window.onload = redirectByDate;
   </script>
 </head>
 <body>
+  <div id="info">กำลังโหลด...</div>
 </body>
 </html>
