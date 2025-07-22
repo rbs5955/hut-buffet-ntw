@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Redirecting...</title>
+  <script>
+    // ลิงก์ Google Drive ปลายทางที่ใช้ได้ตลอดเวลา และเปลี่ยนเนื้อหาได้โดยใช้ Manage Versions
+    const links = {
+      a: "https://drive.google.com/file/d/13HcX_7ygkpUNYra6NCATkkRBu_Rp8D9q/view?usp=sharing", // 22 ก.ค. - 6 ส.ค. 2025
+      b: "https://drive.google.com/file/d/1eF0soiR4qu5x8mOh5OJCtbpr-S1HzZCR/view?usp=sharing",  // 7 ส.ค. - 31 ต.ค. 2025
+      c: "https://drive.google.com/file/d/1OEYqYGbt7WMDbMchIOOdyelLRsxXtjh2/view?usp=sharing"   // 1 พ.ย. - 31 ธ.ค. 2025
+    };
+
+    function getThailandDate() {
+      const now = new Date();
+      const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+      return new Date(utc + (7 * 60 * 60 * 1000)); // UTC+7
+    }
+
+    (function redirectByDate() {
+      const now = getThailandDate();
+
+      const dateAStart = new Date("2025-07-22T00:00:00+07:00");
+      const dateAEnd   = new Date("2025-08-06T23:59:59+07:00");
+
+      const dateBStart = new Date("2025-08-07T00:00:00+07:00");
+      const dateBEnd   = new Date("2025-10-31T23:59:59+07:00");
+
+      const dateCStart = new Date("2025-11-01T00:00:00+07:00");
+      const dateCEnd   = new Date("2025-12-31T23:59:59+07:00");
+
+      let targetURL = null;
+
+      if (now >= dateAStart && now <= dateAEnd) {
+        targetURL = links.a;
+      } else if (now >= dateBStart && now <= dateBEnd) {
+        targetURL = links.b;
+      } else if (now >= dateCStart && now <= dateCEnd) {
+        targetURL = links.c;
+      }
+
+      if (targetURL) {
+        window.location.href = targetURL;
+      } else {
+        document.body.innerHTML = "<h2>ขออภัย ไม่พบข้อมูลสำหรับช่วงวันนี้</h2>";
+      }
+    })();
+  </script>
+</head>
+<body>
+</body>
+</html>
